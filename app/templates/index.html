@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - MyApp{% endblock %}
+
+{% block content %}
+<div class="text-center">
+  <h1>Welcome to MyApp</h1>
+  <p>Select a mode to get started:</p>
+  <div class="d-grid gap-3 col-6 mx-auto">
+    <a href="/quick" class="btn btn-primary btn-lg">Quick mode</a>
+    <a href="/interactive" class="btn btn-secondary btn-lg">Interactive mode</a>
+  </div>
+</div>
+{% endblock %}
