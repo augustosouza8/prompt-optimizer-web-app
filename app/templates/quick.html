@@ -5,7 +5,28 @@
 {% block content %}
 <div class="text-center">
   <h2>Quick Mode</h2>
-  <p>Coming Soon…</p>
+
+  <form method="post" class="mb-4">
+    <div class="mb-3">
+      <textarea
+        class="form-control"
+        name="user_input"
+        rows="3"
+        placeholder="Enter your message…"
+      >{{ user_input or '' }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Send</button>
+  </form>
+
+  {% if response %}
+    <hr>
+    <h5>Response:</h5>
+    <div
+      class="alert alert-secondary text-start"
+      style="white-space: pre-wrap;"
+    >{{ response }}</div>
+  {% endif %}
+
   <a href="/" class="btn btn-link">← Back to Home</a>
 </div>
 {% endblock %}
