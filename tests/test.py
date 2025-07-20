@@ -38,22 +38,6 @@ async def main():
             )
 
 
-            # ——— DEBUG: dump the full system prompt we’ll send to the model ———
-            run_messages = agent.get_run_messages(
-                message="",
-                session_id=agent.session_id or "",
-                user_id=agent.user_id,
-
-
-                # # to test later:
-                # instructions="Speak in spanish"
-
-                # # to test later:
-                # system_message="Speak in spanish"
-
-            )
-
-
 
             print("Type anything (e.g. “Tell me a joke”, “Analyze sentiment of X”, or “quit” to exit):")
 

@@ -1,99 +1,11 @@
 {% extends 'base.html' %}
 
-{% block title %}Quick Mode – MyApp{% endblock %}
+{% block title %}Quick Mode - MyApp{% endblock %}
 
 {% block content %}
 <div class="text-center">
   <h2>Quick Mode</h2>
-
-  <!-- Quick Mode Form -->
-  <form id="quick-form" class="mx-auto col-md-6">
-    <div class="mb-3">
-      <label for="prompt" class="form-label">Enter your prompt</label>
-      <textarea
-        id="prompt"
-        name="prompt"
-        class="form-control"
-        rows="3"
-        maxlength="200"
-        required
-        placeholder="Type up to 200 characters..."
-      ></textarea>
-      <div class="form-text">200 characters max.</div>
-    </div>
-
-    <div class="mb-3">
-      <label for="tone" class="form-label">Select tone</label>
-      <select id="tone" name="tone" class="form-select" required>
-        <option value="Standard" selected>Standard</option>
-        <option value="Technical">Technical</option>
-        <option value="Informal">Informal</option>
-      </select>
-    </div>
-
-    <button id="send-btn" type="submit" class="btn btn-primary">
-      Send
-    </button>
-  </form>
-
-  <!-- Loading Spinner (hidden by default) -->
-  <div id="spinner" class="text-center mt-4" style="display: none;">
-    <div class="spinner-border" role="status">
-      <span class="visually-hidden">Loading…</span>
-    </div>
-  </div>
-
-  <!-- Results Area -->
-  <div id="results" class="mt-4"></div>
-
-  <a href="/" class="btn btn-link mt-3">← Back to Home</a>
+  <p>Coming Soon…</p>
+  <a href="/" class="btn btn-link">← Back to Home</a>
 </div>
-{% endblock %}
-
-{% block extra_scripts %}
-<script>
-document.getElementById('quick-form').addEventListener('submit', async function(e) {
-  e.preventDefault();
-
-  // grab elements
-  const form = e.target;
-  const prompt = form.prompt.value.trim();
-  const tone = form.tone.value;
-  const sendBtn = document.getElementById('send-btn');
-  const spinner = document.getElementById('spinner');
-  const results = document.getElementById('results');
-
-  // simple validation
-  if (!prompt) return;
-  sendBtn.disabled = true;
-  form.style.display = 'none';
-  spinner.style.display = 'block';
-
-  try {
-    const resp = await fetch('/quick', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, tone })
-    });
-    const payload = await resp.json();
-
-    spinner.style.display = 'none';
-    if (resp.ok && payload.enhanced) {
-      results.innerHTML = `<h5>Enhanced prompt:</h5><pre>${payload.enhanced}</pre>`;
-    } else {
-      results.innerHTML = `<div class="alert alert-danger">` +
-        (payload.error || 'Sorry, please try again later.') +
-        `</div>`;
-      form.style.display = 'block';
-      sendBtn.disabled = false;
-    }
-  } catch (err) {
-    spinner.style.display = 'none';
-    results.innerHTML = `<div class="alert alert-danger">
-      Error communicating with server. Please try again.</div>`;
-    form.style.display = 'block';
-    sendBtn.disabled = false;
-  }
-});
-</script>
 {% endblock %}

@@ -75,7 +75,10 @@ async def main():
             markdown=False,
             debug_mode=True,
             debug_level=2,
-            system_message="Always write your answer in spanish",
+            # system_message="Always write your answer in spanish",
+            # instructions="YOU MUST ALWAYS BE POLITE",
+            # success_criteria="IF YOUR WHOLE ANSWER IS IN PORTUGUESE",
+
         )
 
         print("Type anything (or 'quit' to exit):")
