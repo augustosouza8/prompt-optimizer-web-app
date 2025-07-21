@@ -75,3 +75,10 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
+
+import gradio as gr
+gr.interface()
+gr.Textbox()
+gr.Json

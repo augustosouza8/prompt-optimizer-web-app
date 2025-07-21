@@ -41,6 +41,7 @@ async def _query_agent_async(message: str) -> str:
             markdown=False,
             debug_mode=True,
             debug_level=2,
+            memory=None,  # no Memory backend at all
             system_message="You are a agent that only uses the provided tools to answer the user."
                            "After running the tool call, you must only copy the tool response and sent it to the user."
                            "Do not add any extra comments. "

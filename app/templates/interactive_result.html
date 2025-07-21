@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Interactive Mode – Result{% endblock %}
+
+{% block content %}
+<h2>Interactive Mode: Final Analysis</h2>
+<div class="mb-4" style="white-space: pre-wrap;">
+  {{ analysis }}
+</div>
+<a href="{{ url_for('main.index') }}" class="btn btn-primary">Back to Home</a>
+{% endblock %}

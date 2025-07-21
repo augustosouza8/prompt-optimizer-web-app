@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Interactive Mode – Step 2{% endblock %}
+
+{% block content %}
+<h2>Interactive Mode: Step 2</h2>
+<p>Please answer these follow‑up questions:</p>
+
+<form method="post" action="{{ url_for('main.interactive_followup') }}">
+  {% for q in followups %}
+    <div class="mb-3">
+      <label class="form-label">{{ loop.index }}. {{ q }}</label>
+      <textarea
+        name="follow_a"
+        class="form-control"
+        rows="2"
+        required
+      ></textarea>
+      <input type="hidden" name="follow_q" value="{{ q }}">
+    </div>
+  {% endfor %}
+
+  <button type="submit" class="btn btn-primary">Submit</button>
+  <a href="{{ url_for('main.index') }}" class="btn btn-link">Cancel</a>
+</form>
+{% endblock %}
