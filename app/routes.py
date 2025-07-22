@@ -1,10 +1,19 @@
-# app/routes.py
-
 from flask import Blueprint, render_template, request, session
 from .agno_agent import query_agent
 import re
 
 main_bp = Blueprint('main', __name__)
+
+# ────────────────────────────────────────────────────────────────────────────────
+# Define the five interactive questions in one place:
+INTERACTIVE_QUESTIONS = [
+    "What is your goal or what do you want to achieve?",
+    "What specific information or input do you have?",
+    "What format or output style do you prefer?",
+    "Who is the target audience, if any?",
+    "Are there any constraints or things to avoid/include?"
+]
+# ────────────────────────────────────────────────────────────────────────────────
 
 @main_bp.route('/')
 def index():
@@ -27,19 +36,13 @@ def quick():
 
 @main_bp.route('/interactive', methods=['GET'])
 def interactive():
-    # Step 1: show the five‑question form
-    return render_template('interactive_step1.html')
+    # Pass the questions into the template instead of hard‑coding
+    return render_template('interactive_step1.html', questions=INTERACTIVE_QUESTIONS)
 
 @main_bp.route('/interactive', methods=['POST'])
 def interactive_submit():
-    # 1) Gather the five fixed Q&A
-    questions = [
-        "What is your goal or what do you want to achieve?",
-        "What specific information or input do you have?",
-        "What format or output style do you prefer?",
-        "Who is the target audience, if any?",
-        "Are there any constraints or things to avoid/include?"
-    ]
+    # 1) Re‑use the same list of questions here
+    questions = INTERACTIVE_QUESTIONS
     answers = [request.form.get(f"q{i}", "").strip() for i in range(1, 6)]
     qas = [{"q": questions[i], "a": answers[i]} for i in range(5)]
 
@@ -52,11 +55,9 @@ def interactive_submit():
         prompt_lines.append(f"Question: {pair['q']}\nAnswer: {pair['a']}")
     prompt = "\n\n".join(prompt_lines)
 
-
     raw_followups = query_agent(prompt)
 
-
-    # 4) Parse out exactly three follow‐up questions
+    # 4) Parse out exactly three follow‑up questions
     followups = parse_numbered_list(raw_followups, count=3)
 
     # 5) Show step 2

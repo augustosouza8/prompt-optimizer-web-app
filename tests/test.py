@@ -66,6 +66,13 @@ async def main():
                 await agent.aprint_response(user_input, stream=False)
 
 
+                run_response = await agent.arun(user_input)
+                agent_response = run_response.content
+
+
+
+
+
     except Exception as e:
         # Suppress the known SSE cleanup error on Python 3.12 so the script exits cleanly
         if "generator didn't stop after athrow" in str(e):
@@ -78,7 +85,3 @@ if __name__ == "__main__":
 
 
 
-import gradio as gr
-gr.interface()
-gr.Textbox()
-gr.Json

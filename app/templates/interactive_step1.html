@@ -5,41 +5,20 @@
 {% block content %}
 <h2>Interactive Mode</h2>
 <form method="post" action="{{ url_for('main.interactive') }}">
-  <!-- Question 1 -->
-  <div class="mb-3">
-    <label for="q1" class="form-label">
-      1. What is your goal or what do you want to achieve?
-    </label>
-    <textarea id="q1" name="q1" class="form-control" rows="2" required></textarea>
-  </div>
-  <!-- Question 2 -->
-  <div class="mb-3">
-    <label for="q2" class="form-label">
-      2. What specific information or input do you have?
-    </label>
-    <textarea id="q2" name="q2" class="form-control" rows="2" required></textarea>
-  </div>
-  <!-- Question 3 -->
-  <div class="mb-3">
-    <label for="q3" class="form-label">
-      3. What format or output style do you prefer?
-    </label>
-    <textarea id="q3" name="q3" class="form-control" rows="2" required></textarea>
-  </div>
-  <!-- Question 4 -->
-  <div class="mb-3">
-    <label for="q4" class="form-label">
-      4. Who is the target audience, if any?
-    </label>
-    <textarea id="q4" name="q4" class="form-control" rows="2" required></textarea>
-  </div>
-  <!-- Question 5 -->
-  <div class="mb-3">
-    <label for="q5" class="form-label">
-      5. Are there any constraints or things to avoid/include?
-    </label>
-    <textarea id="q5" name="q5" class="form-control" rows="2" required></textarea>
-  </div>
+  {% for question in questions %}
+    <div class="mb-3">
+      <label for="q{{ loop.index }}" class="form-label">
+        {{ loop.index }}. {{ question }}
+      </label>
+      <textarea
+        id="q{{ loop.index }}"
+        name="q{{ loop.index }}"
+        class="form-control"
+        rows="2"
+        required
+      ></textarea>
+    </div>
+  {% endfor %}
 
   <button type="submit" class="btn btn-primary">Next</button>
   <a href="{{ url_for('main.index') }}" class="btn btn-link">Cancel</a>

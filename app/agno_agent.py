@@ -43,9 +43,8 @@ async def _query_agent_async(message: str) -> str:
             debug_level=2,
             memory=None,  # no Memory backend at all
             system_message="You are a agent that only uses the provided tools to answer the user."
-                           "After running the tool call, you must only copy the tool response and sent it to the user."
-                           "Do not add any extra comments. "
-                           "Your final answer must be just a copy and paste from the latest tool call"
+                           "After running the tool call, you must only copy the tool response and send it to the user as your final answer."
+                           "Do not add any extra comments."
         )
         # Use the async agent method so MCPTools can drive SSE under the hood
         run_response = await agent.arun(message)
