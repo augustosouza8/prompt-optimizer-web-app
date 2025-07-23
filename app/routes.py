@@ -7,11 +7,11 @@ main_bp = Blueprint('main', __name__)
 # ────────────────────────────────────────────────────────────────────────────────
 # Define the five interactive questions in one place:
 INTERACTIVE_QUESTIONS = [
-    "What is your goal or what do you want to achieve?",
-    "What specific information or input do you have?",
-    "What format or output style do you prefer?",
-    "Who is the target audience, if any?",
-    "Are there any constraints or things to avoid/include?"
+    "1. What problem or challenge in your work/life is driving you to seek help from an LLM right now?",
+    "2. What role or expertise should the LLM adopt when responding to you (e.g., expert consultant, creative partner, technical analyst, history teacher)?",
+    "3. What format or style do you want the response to be in (e.g., formal report, casual explanation, step-by-step guide, creative content)?",
+    "4. Are there any specific constraints, limitations, or anything in particular that should be focused on?",
+    "5. Would you like to add anything else about your demand?"
 ]
 # ────────────────────────────────────────────────────────────────────────────────
 
@@ -52,7 +52,7 @@ def interactive_submit():
     session['interactive_qas'] = qas
 
     # 3) Build and send the tool call to MCP
-    prompt_lines = ["Call the prompt_optimizer_mcp_server_five_questions_analysis_and_followup_generation tool to analyse the given 5 questions and answers and generate 3 follow-up questions:"]
+    prompt_lines = ["Call the tool named prompt_optimizer_mcp_server_five_questions_analysis_and_followup_generation to analyse the following 5 questions and answers and generate 3 follow-up questions:"]
     for pair in qas:
         prompt_lines.append(f"Question: {pair['q']}\nAnswer: {pair['a']}")
     prompt = "\n\n".join(prompt_lines)
@@ -76,7 +76,7 @@ def interactive_followup():
     followups = [{"q": follow_qs[i], "a": follow_as[i]} for i in range(len(follow_qs))]
 
     # 3) Build and send the final tool call
-    prompt_lines = ["Call the prompt_optimizer_mcp_server_eight_questions_analysis_and_prompt_generation tool to analyse the 8 given questions and generate a final prompt:"]
+    prompt_lines = ["Call the tool named prompt_optimizer_mcp_server_eight_questions_analysis_and_prompt_generation to analyse the 8 given questions and generate a final prompt:"]
     for pair in qas + followups:
         prompt_lines.append(f"Question: {pair['q']}\nAnswer: {pair['a']}")
     prompt = "\n\n".join(prompt_lines)

@@ -8,7 +8,7 @@
   {% for question in questions %}
     <div class="mb-3">
       <label for="q{{ loop.index }}" class="form-label">
-        {{ loop.index }}. {{ question }}
+        {{ question }}
       </label>
       <textarea
         id="q{{ loop.index }}"

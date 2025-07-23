@@ -2,6 +2,8 @@
 
 import os
 import asyncio
+
+from agno.tools.thinking import ThinkingTools
 from dotenv import load_dotenv
 from builtins import BaseExceptionGroup
 from agno.agent import Agent
@@ -41,17 +43,16 @@ async def _query_agent_async(message: str) -> str:
             markdown=False,
             debug_mode=True,
             debug_level=2,
-            memory=None,  # no Memory backend at all
             system_message=
 
-                # "You are an agent that uses tools to answer the user. Just copy and paste the tool result to the user."
+                "You are an agent that uses tools to answer the user. Just copy and paste the tool result to the user."
 
-                "You are an AI assistant with a single, critical task: execute a tool and report the result. "
-                "After the tool provides its output, you MUST return that output EXACTLY as it was given. "
-                "Your final answer must ONLY contain the raw text from the tool's response. "
-                "DO NOT add any introductory phrases, explanations, summaries, or any other text. "
-                "For example, if the tool returns 'Optimized prompt.', your response is just 'Optimized prompt.' and nothing else;"
-                "if the tool returns 'Three questions: 1. Foo? 2. Foo? 3. Foo?' your response is just '1. Foo? 2. Foo? 3. Foo?' and nothing else, ",
+                # "You are an AI assistant with a single, critical task: execute a tool and report the result. "
+                # "After the tool provides its output, you MUST return that output EXACTLY as it was given. "
+                # "Your final answer must ONLY contain the raw text from the tool's response. "
+                # "DO NOT add any introductory phrases, explanations, summaries, or any other text. "
+                # "For example, if the tool returns 'Optimized prompt.', your response is just 'Optimized prompt.' and nothing else;"
+                # "if the tool returns 'Three questions: 1. Foo? 2. Foo? 3. Foo?' your response is just '1. Foo? 2. Foo? 3. Foo?' and nothing else, ",
         )
         # Use the async agent method so MCPTools can drive SSE under the hood
         run_response = await agent.arun(message)
@@ -79,7 +80,8 @@ async def _query_agent_async(message: str) -> str:
             if "cancel scope" not in str(e):
                 raise
 
-    return run_response.content
+    # return run_response.content  # fetching the response by the Agno agent after receiving it from the MCP tool
+    return run_response.tools[0].result.strip()  # fetching the response directly from the MCP tool
 
 
 def query_agent(message: str) -> str:
