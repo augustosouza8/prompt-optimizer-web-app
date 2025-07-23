@@ -22,13 +22,15 @@ def index():
 @main_bp.route('/quick', methods=['GET', 'POST'])
 def quick():
     user_input = None
+    prompt_styling = None
     response = None
 
     if request.method == 'POST':
         user_input = request.form.get('user_input', '').strip()
+        prompt_styling = request.form.get('tone', '').strip()
         if user_input:
             try:
-                response = query_agent(f"Optimize the following prompt: {user_input}")
+                response = query_agent(f"Call the prompt_optimizer_mcp_server_one_shot_optimization tool to optimize the following initial prompt idea and writing tone: '{user_input} [Please consider a {prompt_styling} writing tone to optimize the given prompt]'")
             except Exception as e:
                 response = f"Error: {e}"
 
@@ -50,7 +52,7 @@ def interactive_submit():
     session['interactive_qas'] = qas
 
     # 3) Build and send the tool call to MCP
-    prompt_lines = ["CALL_TOOL five_questions_analysis_and_followup"]
+    prompt_lines = ["Call the prompt_optimizer_mcp_server_five_questions_analysis_and_followup_generation tool to analyse the given 5 questions and answers and generate 3 follow-up questions:"]
     for pair in qas:
         prompt_lines.append(f"Question: {pair['q']}\nAnswer: {pair['a']}")
     prompt = "\n\n".join(prompt_lines)
@@ -74,9 +76,9 @@ def interactive_followup():
     followups = [{"q": follow_qs[i], "a": follow_as[i]} for i in range(len(follow_qs))]
 
     # 3) Build and send the final tool call
-    prompt_lines = ["CALL_TOOL prompt_optimizer_mcp_server_five_and_followup_questions_final_analysis"]
+    prompt_lines = ["Call the prompt_optimizer_mcp_server_eight_questions_analysis_and_prompt_generation tool to analyse the 8 given questions and generate a final prompt:"]
     for pair in qas + followups:
-        prompt_lines.append(f"Q: {pair['q']}\nA: {pair['a']}")
+        prompt_lines.append(f"Question: {pair['q']}\nAnswer: {pair['a']}")
     prompt = "\n\n".join(prompt_lines)
 
     analysis = query_agent(prompt)

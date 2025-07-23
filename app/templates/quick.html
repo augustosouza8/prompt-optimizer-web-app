@@ -15,6 +15,17 @@
         placeholder="Enter your message…"
       >{{ user_input or '' }}</textarea>
     </div>
+
+    <div class="mb-3">
+      <label for="toneSelect" class="form-label">Select Tone:</label>
+      <select class="form-select" id="toneSelect" name="tone">
+        <option value="Standard">Standard</option>
+        <option value="Technical">Technical</option>
+        <option value="Informal">Informal</option>
+      </select>
+    </div>
+
+
     <button type="submit" class="btn btn-primary">Send</button>
   </form>
 
