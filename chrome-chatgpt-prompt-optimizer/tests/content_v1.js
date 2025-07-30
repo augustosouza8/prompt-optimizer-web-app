@@ -1,3 +1,7 @@
+// the file below is a working test of the optimize button with a pre fixed message to see the optimize button working
+// it basically fetches what's written on ChatGPT chatbox and replaces it with the fixed message "That is just a text to make sure that we are able to correctly fetch the content from ChatGPT chatbox and replace it with this dummy message"
+
+
 console.log("🚀 [StubOptimizer] content_v1.js loaded");
 
 // Selectors & IDs
@@ -41,27 +45,20 @@ const poll = setInterval(() => {
 }, 300);
 
 
-// Replace stubOptimize with a real fetch to your local proxy
-async function stubOptimize(promptText) {
-  console.log("🚀 [StubOptimizer] Calling local proxy with:", promptText);
-  const res = await fetch("https://flask-proxy-mcp-and-prompt-optimizer.onrender.com/optimize", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt: promptText })
+// A stub “optimizer” that pretends to call Groq
+function stubOptimize(promptText) {
+  console.log("🚀 [StubOptimizer] stubOptimize received:", promptText);
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(
+        "That is just a text to make sure that we are able to correctly fetch the content from ChatGPT chatbox and replace it with this dummy message"
+      );
+    }, 500);
   });
-  if (!res.ok) {
-    const txt = await res.text();
-    throw new Error(`Proxy error ${res.status}: ${txt}`);
-  }
-  const { optimized_prompt } = await res.json();
-  if (!optimized_prompt) {
-    throw new Error("Invalid proxy response");
-  }
-  return optimized_prompt;
 }
 
 
-// Click handler: grab prompt, run optimizer, swap in optimized text
+// Click handler: grab prompt, run stub, swap in dummy text
 async function onOptimizeClick() {
   const btn = document.getElementById(BTN_ID);
   btn.disabled = true;
@@ -79,16 +76,17 @@ async function onOptimizeClick() {
   const originalPrompt = inputDiv.innerText.trim();
   console.log("🚀 [StubOptimizer] Original prompt:", originalPrompt);
 
+  // Run our stub instead of a real API call
   try {
     const optimized = await stubOptimize(originalPrompt);
-    console.log("🚀 [StubOptimizer] Proxy returned:", optimized);
+    console.log("🚀 [StubOptimizer] Stub returned:", optimized);
 
     // Replace the contentEditable’s text
     inputDiv.innerText = optimized;
     // Dispatch an input event so React notices
     inputDiv.dispatchEvent(new Event("input", { bubbles: true }));
   } catch (err) {
-    console.error("🚀 [StubOptimizer] Optimization failed:", err);
+    console.error("🚀 [StubOptimizer] Stub failed:", err);
     btn.innerText = "Error";
     setTimeout(() => (btn.innerText = "Optimize"), 2000);
   } finally {
