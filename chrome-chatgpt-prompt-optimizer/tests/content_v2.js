@@ -3,8 +3,8 @@
 console.log("🚀 [Optimizer] content_v1.js loaded");
 
 // —— Configuration ——
-const GROQ_API_KEY = "GROQ API KEY HERE";                // ← Replace with your key
-const GROQ_MODEL   = "llama-3.3-70b-versatile";
+// const GROQ_API_KEY = "GROQ API KEY HERE";                // ← Replace with your key
+// const GROQ_MODEL   = "llama-3.3-70b-versatile";
 const SYSTEM_PROMPT = "You are a prompt-engineering expert. The user will give you a simple prompt, and you must rewrite and optimize it for clarity, specificity, and better results. If the user specifies a writing tone (e.g., 'Standard writing tone', 'Technical writing tone'), incorporate that tone into the optimized prompt. If no tone is specified, use a clear, professional tone. Always make the final optimized prompt more specific, actionable, and likely to produce high-quality responses. IMPORTANT: Your response must contain ONLY the final optimized prompt with no additional commentary or explanation."
 
 // —— Selectors & IDs ——
