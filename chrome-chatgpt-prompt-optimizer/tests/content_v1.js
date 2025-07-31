@@ -1,7 +1,6 @@
 // the file below is a working test of the optimize button with a pre fixed message to see the optimize button working
 // it basically fetches what's written on ChatGPT chatbox and replaces it with the fixed message "That is just a text to make sure that we are able to correctly fetch the content from ChatGPT chatbox and replace it with this dummy message"
 
-
 console.log("🚀 [StubOptimizer] content_v1.js loaded");
 
 // Selectors & IDs
