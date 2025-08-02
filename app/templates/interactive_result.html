@@ -4,10 +4,43 @@
 
 {% block content %}
 <h2>Interactive Optimized Prompt:</h2>
-<div
-      class="alert alert-secondary text-start"
-      style="white-space: pre-wrap;">
-  {{ analysis }}
+
+<div class="mb-3 text-start">
+  <div class="d-flex align-items-start">
+    <div
+      id="interactivePrompt"
+      class="alert alert-secondary flex-grow-1"
+      style="white-space: pre-wrap;"
+    >{{ analysis }}</div>
+    <button
+      id="copyBtn"
+      class="btn btn-secondary ms-2"
+      type="button"
+    >Copy</button>
+  </div>
 </div>
-<a href="{{ url_for('main.index') }}" class="btn btn-primary">Back to Home</a>
+
+<a href="{{ url_for('main.index') }}" class="btn btn-link">← Back to Home</a>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const copyBtn = document.getElementById('copyBtn');
+    const interactivePrompt = document.getElementById('interactivePrompt');
+    if (copyBtn && interactivePrompt) {
+      copyBtn.addEventListener('click', function() {
+        const text = interactivePrompt.innerText;
+        navigator.clipboard.writeText(text)
+          .then(() => {
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
+          })
+          .catch(err => {
+            console.error('Copy failed', err);
+          });
+      });
+    }
+  });
+</script>
 {% endblock %}

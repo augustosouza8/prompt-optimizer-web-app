@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Quick Mode - MyApp{% endblock %}
+{% block title %}Prompt Optimization Web App{% endblock %}
 
 {% block content %}
 <div class="text-center">
@@ -14,21 +14,27 @@
         rows="3"
         required
         maxlength="1800"
-        placeholder="Enter your prompt, e.g.: 'Help me plan a 7 days trip to Italy'"
+        placeholder="Enter your prompt, e.g.: 'Help me plan a 7-day trip to Italy'"
       >{{ user_input or '' }}</textarea>
     </div>
 
     <div class="mb-3">
       <label for="toneSelect" class="form-label">Select Tone:</label>
       <select class="form-select" id="toneSelect" name="tone" required>
-        <option value="Standard" {% raw %}{% if selected_tone == 'Standard' %}selected{% endif %}{% endraw %}>Standard</option>
-        <option value="Technical" {% raw %}{% if selected_tone == 'Technical' %}selected{% endif %}{% endraw %}>Technical</option>
-        <option value="Informal" {% raw %}{% if selected_tone == 'Informal' %}selected{% endif %}{% endraw %}>Informal</option>
-        <option value="Custom" {% raw %}{% if selected_tone == 'Custom' %}selected{% endif %}{% endraw %}>I want to set my own custom tone</option>
+        <option value="Standard" {% if selected_tone == 'Standard' %}selected{% endif %}>Standard</option>
+        <option value="Technical" {% if selected_tone == 'Technical' %}selected{% endif %}>Technical</option>
+        <option value="Informal" {% if selected_tone == 'Informal' %}selected{% endif %}>Informal</option>
+        <option value="Custom" {% if selected_tone == 'Custom' %}selected{% endif %}>
+          I want to set my own custom tone
+        </option>
       </select>
     </div>
 
-    <div class="mb-3" id="customToneContainer" style="{% raw %}{% if selected_tone == 'Custom' %}display:block;{% else %}display:none;{% endif %}{% endraw %}">
+    <div
+      class="mb-3"
+      id="customToneContainer"
+      style="{% if selected_tone == 'Custom' %}display:block;{% else %}display:none;{% endif %}"
+    >
       <input
         type="text"
         class="form-control"
@@ -37,7 +43,7 @@
         maxlength="180"
         placeholder="Enter your custom tone (max 180 chars)"
         value="{{ custom_tone or '' }}"
-        {% raw %}{% if selected_tone == 'Custom' %}required{% endif %}{% endraw %}
+        {% if selected_tone == 'Custom' %}required{% endif %}
       />
     </div>
 
@@ -46,11 +52,21 @@
 
   {% if response %}
     <hr>
-    <h5>Optimized Prompt ({{ prompt_styling }} tone):</h5>
-    <div
-      class="alert alert-secondary text-start"
-      style="white-space: pre-wrap;"
-    >{{ response }}</div>
+    <div class="mb-3 text-start">
+      <h5>Optimized Prompt:</h5>
+      <div class="d-flex align-items-start">
+        <div
+          id="optimizedPrompt"
+          class="alert alert-secondary flex-grow-1"
+          style="white-space: pre-wrap;"
+        >{{ response }}</div>
+        <button
+          id="copyBtn"
+          class="btn btn-secondary ms-2"
+          type="button"
+        >Copy</button>
+      </div>
+    </div>
   {% endif %}
 
   <a href="{{ url_for('main.index') }}" class="btn btn-link">← Back to Home</a>
@@ -64,6 +80,7 @@
     const customContainer = document.getElementById('customToneContainer');
     const customInput = document.getElementById('customToneInput');
 
+    // Show/hide custom-tone box
     toneSelect.addEventListener('change', function() {
       if (toneSelect.value === 'Custom') {
         customContainer.style.display = 'block';
@@ -74,6 +91,23 @@
         customInput.value = '';
       }
     });
+
+    // Copy button logic
+    const copyBtn = document.getElementById('copyBtn');
+    const optimizedPrompt = document.getElementById('optimizedPrompt');
+    if (copyBtn && optimizedPrompt) {
+      copyBtn.addEventListener('click', function() {
+        const text = optimizedPrompt.innerText;
+        navigator.clipboard.writeText(text)
+          .then(() => {
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
+          })
+          .catch(err => {
+            console.error('Copy failed', err);
+          });
+      });
+    }
   });
 </script>
 {% endblock %}
