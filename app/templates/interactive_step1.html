@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Interactive Mode – Step 1{% endblock %}
+{% block title %}Prompt Optimization Web App{% endblock %}
 
 {% block content %}
-<h2>Interactive Mode</h2>
+<h2>Interactive Prompt Optimization</h2>
 <form method="post" action="{{ url_for('main.interactive') }}">
   {% for question in questions %}
     <div class="mb-3">
@@ -21,6 +21,6 @@
   {% endfor %}
 
   <button type="submit" class="btn btn-primary">Next</button>
-  <a href="{{ url_for('main.index') }}" class="btn btn-link">Cancel</a>
+  <a href="{{ url_for('main.index') }}" class="btn btn-link">Back to Home</a>
 </form>
 {% endblock %}

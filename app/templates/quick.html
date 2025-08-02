@@ -12,32 +12,68 @@
         class="form-control"
         name="user_input"
         rows="3"
-        placeholder="Enter your message…"
+        required
+        maxlength="1800"
+        placeholder="Enter your prompt, e.g.: 'Help me plan a 7 days trip to Italy'"
       >{{ user_input or '' }}</textarea>
     </div>
 
     <div class="mb-3">
       <label for="toneSelect" class="form-label">Select Tone:</label>
-      <select class="form-select" id="toneSelect" name="tone">
-        <option value="Standard">Standard</option>
-        <option value="Technical">Technical</option>
-        <option value="Informal">Informal</option>
+      <select class="form-select" id="toneSelect" name="tone" required>
+        <option value="Standard" {% raw %}{% if selected_tone == 'Standard' %}selected{% endif %}{% endraw %}>Standard</option>
+        <option value="Technical" {% raw %}{% if selected_tone == 'Technical' %}selected{% endif %}{% endraw %}>Technical</option>
+        <option value="Informal" {% raw %}{% if selected_tone == 'Informal' %}selected{% endif %}{% endraw %}>Informal</option>
+        <option value="Custom" {% raw %}{% if selected_tone == 'Custom' %}selected{% endif %}{% endraw %}>I want to set my own custom tone</option>
       </select>
     </div>
 
+    <div class="mb-3" id="customToneContainer" style="{% raw %}{% if selected_tone == 'Custom' %}display:block;{% else %}display:none;{% endif %}{% endraw %}">
+      <input
+        type="text"
+        class="form-control"
+        id="customToneInput"
+        name="custom_tone"
+        maxlength="180"
+        placeholder="Enter your custom tone (max 180 chars)"
+        value="{{ custom_tone or '' }}"
+        {% raw %}{% if selected_tone == 'Custom' %}required{% endif %}{% endraw %}
+      />
+    </div>
 
     <button type="submit" class="btn btn-primary">Send</button>
   </form>
 
   {% if response %}
     <hr>
-    <h5>Response:</h5>
+    <h5>Optimized Prompt ({{ prompt_styling }} tone):</h5>
     <div
       class="alert alert-secondary text-start"
       style="white-space: pre-wrap;"
     >{{ response }}</div>
   {% endif %}
 
-  <a href="/" class="btn btn-link">← Back to Home</a>
+  <a href="{{ url_for('main.index') }}" class="btn btn-link">← Back to Home</a>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const toneSelect = document.getElementById('toneSelect');
+    const customContainer = document.getElementById('customToneContainer');
+    const customInput = document.getElementById('customToneInput');
+
+    toneSelect.addEventListener('change', function() {
+      if (toneSelect.value === 'Custom') {
+        customContainer.style.display = 'block';
+        customInput.required = true;
+      } else {
+        customContainer.style.display = 'none';
+        customInput.required = false;
+        customInput.value = '';
+      }
+    });
+  });
+</script>
 {% endblock %}

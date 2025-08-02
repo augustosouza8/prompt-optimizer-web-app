@@ -21,76 +21,93 @@ def index():
 
 @main_bp.route('/quick', methods=['GET', 'POST'])
 def quick():
-    user_input = None
+    user_input     = None
+    raw_tone       = 'Standard'
+    custom_tone    = ''
     prompt_styling = None
-    response = None
+    response       = None
 
     if request.method == 'POST':
-        user_input = request.form.get('user_input', '').strip()
-        prompt_styling = request.form.get('tone', '').strip()
+        # grab what the user typed and their tone selection
+        user_input  = request.form.get('user_input', '').strip()
+        raw_tone    = request.form.get('tone', 'Standard')
+        custom_tone = request.form.get('custom_tone', '').strip()
+
+        # decide what to actually send to the agent
+        if raw_tone == 'Custom':
+            prompt_styling = custom_tone or 'Standard'
+        else:
+            prompt_styling = raw_tone
+
         if user_input:
             try:
-                response = query_agent(f"Call the prompt_optimizer_mcp_server_one_shot_optimization tool to optimize the following initial prompt idea and writing tone: '{user_input} [Please consider a {prompt_styling} writing tone to optimize the given prompt]'")
+                response = query_agent(
+                    f"Call the prompt_optimizer_mcp_server_one_shot_optimization "
+                    f"tool to optimize the following initial prompt idea and writing tone: "
+                    f"'{user_input} [Please consider a {prompt_styling} writing tone to optimize the given prompt]'"
+                )
             except Exception as e:
                 response = f"Error: {e}"
 
-    return render_template('quick.html', user_input=user_input, response=response)
+    return render_template(
+        'quick.html',
+        user_input=user_input,
+        response=response,
+        selected_tone=raw_tone,
+        custom_tone=custom_tone,
+        prompt_styling=prompt_styling
+    )
+
 
 @main_bp.route('/interactive', methods=['GET'])
 def interactive():
-    # Pass the questions into the template instead of hard‑coding
     return render_template('interactive_step1.html', questions=INTERACTIVE_QUESTIONS)
+
 
 @main_bp.route('/interactive', methods=['POST'])
 def interactive_submit():
-    # 1) Re‑use the same list of questions here
     questions = INTERACTIVE_QUESTIONS
-    answers = [request.form.get(f"q{i}", "").strip() for i in range(1, 6)]
-    qas = [{"q": questions[i], "a": answers[i]} for i in range(5)]
+    answers   = [request.form.get(f"q{i}", "").strip() for i in range(1, 6)]
+    qas       = [{"q": questions[i], "a": answers[i]} for i in range(5)]
 
-    # 2) Persist them in session
     session['interactive_qas'] = qas
 
-    # 3) Build and send the tool call to MCP
-    prompt_lines = ["Call the tool named prompt_optimizer_mcp_server_five_questions_analysis_and_followup_generation to analyse the following 5 questions and answers and generate 3 follow-up questions:"]
+    prompt_lines = [
+        "Call the tool named prompt_optimizer_mcp_server_five_questions_analysis_and_followup_generation "
+        "to analyse the following 5 questions and answers and generate 3 follow-up questions:"
+    ]
     for pair in qas:
         prompt_lines.append(f"Question: {pair['q']}\nAnswer: {pair['a']}")
-    prompt = "\n\n".join(prompt_lines)
 
-    raw_followups = query_agent(prompt)
+    raw_followups = query_agent("\n\n".join(prompt_lines))
+    followups     = parse_numbered_list(raw_followups, count=3)
 
-    # 4) Parse out exactly three follow‑up questions
-    followups = parse_numbered_list(raw_followups, count=3)
-
-    # 5) Show step 2
     return render_template('interactive_step2.html', followups=followups)
+
 
 @main_bp.route('/interactive/followup', methods=['POST'])
 def interactive_followup():
-    # 1) Retrieve the original Q&A from session
     qas = session.get('interactive_qas', [])
 
-    # 2) Collect the three follow‑up Q&A
     follow_qs = request.form.getlist('follow_q')
     follow_as = request.form.getlist('follow_a')
     followups = [{"q": follow_qs[i], "a": follow_as[i]} for i in range(len(follow_qs))]
 
-    # 3) Build and send the final tool call
-    prompt_lines = ["Call the tool named prompt_optimizer_mcp_server_eight_questions_analysis_and_prompt_generation to analyse the 8 given questions and generate a final prompt:"]
+    prompt_lines = [
+        "Call the tool named prompt_optimizer_mcp_server_eight_questions_analysis_and_prompt_generation "
+        "to analyse the 8 given questions and generate a final prompt:"
+    ]
     for pair in qas + followups:
         prompt_lines.append(f"Question: {pair['q']}\nAnswer: {pair['a']}")
-    prompt = "\n\n".join(prompt_lines)
 
-    analysis = query_agent(prompt)
-
-    # 4) Render the final analysis to the user
+    analysis = query_agent("\n\n".join(prompt_lines))
     return render_template('interactive_result.html', analysis=analysis)
 
-# — Helper to extract numbered list items from free text —
+
 def parse_numbered_list(text, count):
     """
     Finds lines like "1. Foo?" and returns ["Foo?", ...] up to `count` items.
     """
     pattern = r'^\s*\d+\.\s*(.+)$'
-    lines = re.findall(pattern, text, flags=re.MULTILINE)
+    lines   = re.findall(pattern, text, flags=re.MULTILINE)
     return lines[:count]
