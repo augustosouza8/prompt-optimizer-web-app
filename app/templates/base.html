@@ -12,10 +12,53 @@
     crossorigin="anonymous"
   >
 </head>
-<body>
-  <div class="container mt-5">
+<body class="d-flex flex-column min-vh-100">
+
+  <!-- HEADER -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
+        <!-- Logo: place your logo file at static/img/logo.png -->
+<!--        <img src="{{ url_for('static', filename='img/logo.png') }}"-->
+<!--             alt="Logo" width="30" height="30"-->
+<!--             class="d-inline-block align-text-top me-2">-->
+        Prompt Optimizer
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.quick') }}">Quick</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.interactive') }}">Interactive</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="container flex-grow-1 mt-5 pb-4">
     {% block content %}{% endblock %}
-  </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-secondary text-light mt-auto py-3">
+    <div class="container text-center">
+      <small>
+        © <script>document.write(new Date().getFullYear())</script> Augusto Souza&nbsp;|&nbsp;
+        <a href="https://github.com/augustosouza8/prompt-optimizer-web-app" class="text-light">GitHub Repo</a>&nbsp;|&nbsp;
+        Built with Flask &amp; and Bootstrap, powered by <a href="https://github.com/agno-agi/agno" class="text-light">Agno Multi-Agent</a>, and connected to an external <a href="https://huggingface.co/spaces/augustosouza/prompt-optimizer-mcp-server/tree/main" class="text-light">MCP server</a>
+      </small>
+    </div>
+  </footer>
 
   <!-- Bootstrap JS via CDN -->
   <script
@@ -25,5 +68,6 @@
   ></script>
 
   {% block extra_scripts %}{% endblock %}
+
 </body>
 </html>
