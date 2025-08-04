@@ -20,6 +20,27 @@
     </div>
   {% endfor %}
 
-  <button type="submit" class="btn btn-lg text-white" style="background-color: #6c757d;">Next</button>
+    <button id="sendBtn" type="submit" class="btn btn-lg text-white" style="background-color: #6c757d;">
+      <span class="btn-label">Next</span>
+      <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+    </button>
+
 </form>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // loading animation
+  document.querySelector('form').addEventListener('submit', function(e) {
+    const btn = document.getElementById('sendBtn');
+    const spinner = btn.querySelector('.spinner-border');
+    const label   = btn.querySelector('.btn-label');
+    // disable to prevent double‐submits
+    btn.disabled = true;
+    // hide label, show spinner + “Loading…”
+    label.textContent = 'Loading…';
+    spinner.classList.remove('d-none');
+  });
+
+</script>
 {% endblock %}
