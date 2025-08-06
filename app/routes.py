@@ -8,10 +8,19 @@ main_bp = Blueprint('main', __name__)
 # Define the five interactive questions in one place:
 INTERACTIVE_QUESTIONS = [
     "1. What problem or challenge in your life is driving you to seek help from an Artificial Intelligence like ChatGPT right now?",
-    "2. What role or expertise should the Artificial Intelligence adopt when responding to you (e.g., expert consultant, creative partner, technical analyst, history teacher)?",
-    "3. What format or style do you want the response to be in (e.g., formal report, casual explanation, step-by-step guide, creative content)?",
+    "2. What role or expertise should the Artificial Intelligence adopt when responding to you?",
+    "3. What format or style do you want the response to be in?",
     "4. Are there any specific constraints, limitations, or anything in particular that should be focused on?",
     "5. Would you like to add anything else about your demand?"
+]
+
+# Add a parallel list of placeholders (one per question)
+INTERACTIVE_PLACEHOLDERS = [
+    "E.g.: 'Help me plan a trip to Italy', 'I want to learn about airplanes', “I need help structuring my quarterly report”",
+    "E.g.: Expert consultant, creative writer, technical analyst, history teacher",
+    "E.g.: Formal report, casual explanation, step-by-step guide, nerdy content, bullet-point action plan (feel free to combine a specific format with a specific style)",
+    "E.g.: 'Only refer to information from scientific papers', 'Don’t mention politics or religion', 'Keep it under 200 words'",
+    "Any other details, the more you tell me about your request, the better I’ll be able to write a prompt for you…"
 ]
 # ────────────────────────────────────────────────────────────────────────────────
 
@@ -65,7 +74,7 @@ def quick():
 
 @main_bp.route('/interactive', methods=['GET'])
 def interactive():
-    return render_template('interactive_step1.html', questions=INTERACTIVE_QUESTIONS)
+    return render_template('interactive_step1.html', questions=INTERACTIVE_QUESTIONS, placeholders=INTERACTIVE_PLACEHOLDERS)
 
 
 @main_bp.route('/interactive', methods=['POST'])

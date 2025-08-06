@@ -5,6 +5,16 @@
 {% block content %}
 <h2>Interactive Prompt Optimization</h2>
 <form method="post" action="{{ url_for('main.interactive') }}">
+
+<!--  Setting a costume color for the placeholder's-->
+<style>
+  textarea::placeholder {
+    color: #C4C4C4 !important;
+    opacity: 1 !important;
+  }
+</style>
+
+
   {% for question in questions %}
     <div class="mb-3">
       <label for="q{{ loop.index }}" class="form-label">
@@ -15,6 +25,7 @@
         name="q{{ loop.index }}"
         class="form-control"
         rows="2"
+        placeholder="{{ placeholders[loop.index0] }}"
         required
       ></textarea>
     </div>
