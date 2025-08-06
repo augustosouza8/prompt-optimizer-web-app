@@ -7,8 +7,8 @@ main_bp = Blueprint('main', __name__)
 # ────────────────────────────────────────────────────────────────────────────────
 # Define the five interactive questions in one place:
 INTERACTIVE_QUESTIONS = [
-    "1. What problem or challenge in your work/life is driving you to seek help from an LLM right now?",
-    "2. What role or expertise should the LLM adopt when responding to you (e.g., expert consultant, creative partner, technical analyst, history teacher)?",
+    "1. What problem or challenge in your life is driving you to seek help from an Artificial Intelligence like ChatGPT right now?",
+    "2. What role or expertise should the Artificial Intelligence adopt when responding to you (e.g., expert consultant, creative partner, technical analyst, history teacher)?",
     "3. What format or style do you want the response to be in (e.g., formal report, casual explanation, step-by-step guide, creative content)?",
     "4. Are there any specific constraints, limitations, or anything in particular that should be focused on?",
     "5. Would you like to add anything else about your demand?"
@@ -18,6 +18,10 @@ INTERACTIVE_QUESTIONS = [
 @main_bp.route('/')
 def index():
     return render_template('index.html')
+
+@main_bp.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
 
 @main_bp.route('/quick', methods=['GET', 'POST'])
 def quick():
