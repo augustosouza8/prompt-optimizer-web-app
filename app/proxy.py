@@ -19,7 +19,7 @@ def optimize():
 
     original = payload["prompt"]
     try:
-        optimized = query_agent(original)
+        optimized = query_agent("Call the prompt_optimizer_mcp_server_one_shot_optimization tool to optimize the following initial prompt:", original)
         return jsonify({"optimized_prompt": optimized})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
