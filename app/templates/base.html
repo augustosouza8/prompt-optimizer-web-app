@@ -45,6 +45,10 @@
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('main.interactive') }}">Interactive</a>
           </li>
+          <!-- Translate button (Option 1) -->
+          <li class="nav-item">
+            <button id="ptTranslate" type="button" class="btn btn-sm btn-outline-light ms-2">Português (Brasil)</button>
+          </li>
         </ul>
       </div>
     </div>
@@ -73,6 +77,20 @@
     integrity="sha384-..."
     crossorigin="anonymous"
   ></script>
+
+  <!-- Translate redirect script -->
+  <script>
+    (function () {
+      var btn = document.getElementById('ptTranslate');
+      if (btn) {
+        btn.addEventListener('click', function () {
+          var target = 'https://translate.google.com/translate?hl=pt-BR&sl=auto&tl=pt&u=' +
+                       encodeURIComponent(window.location.href);
+          window.location.href = target;
+        });
+      }
+    })();
+  </script>
 
   {% block extra_scripts %}{% endblock %}
 
