@@ -12,7 +12,7 @@
     crossorigin="anonymous"
   >
 
-<!--  favicon logo-->
+  <!--  favicon logo-->
   <link rel="icon" sizes="16x16" href="{{ url_for('static', filename='favicon/icon16.png') }}">
   <link rel="icon" sizes="32x32" href="{{ url_for('static', filename='favicon/icon32.png') }}">
   <link rel="icon" sizes="48x48" href="{{ url_for('static', filename='favicon/icon48.png') }}">
@@ -23,11 +23,11 @@
   <!-- HEADER -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-      <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
+      <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}" data-i18n="brand">
         <!-- Logo: place your logo file at static/img/logo.png -->
-<!--        <img src="{{ url_for('static', filename='img/logo.png') }}"-->
-<!--             alt="Logo" width="30" height="30"-->
-<!--             class="d-inline-block align-text-top me-2">-->
+        <!-- <img src="{{ url_for('static', filename='img/logo.png') }}"
+             alt="Logo" width="30" height="30"
+             class="d-inline-block align-text-top me-2"> -->
         Prompt Optimizer
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -37,13 +37,20 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
+            <a class="nav-link" href="{{ url_for('main.index') }}" data-i18n="nav.home">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('main.quick') }}">Quick</a>
+            <a class="nav-link" href="{{ url_for('main.quick') }}" data-i18n="nav.quick">Quick</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('main.interactive') }}">Interactive</a>
+            <a class="nav-link" href="{{ url_for('main.interactive') }}" data-i18n="nav.interactive">Interactive</a>
+          </li>
+          <!-- Language toggle (HTML-only, client-side i18n) -->
+          <li class="nav-item ms-2">
+            <div class="btn-group btn-group-sm" role="group" aria-label="Language">
+              <button id="lang-pt" type="button" class="btn btn-outline-light">PT</button>
+              <button id="lang-en" type="button" class="btn btn-outline-light">EN</button>
+            </div>
           </li>
         </ul>
       </div>
@@ -60,8 +67,8 @@
     <div class="container text-center">
       <small>
         © <script>document.write(new Date().getFullYear())</script>
-        <a href="{{ url_for('main.privacy') }}" class="text-light">Privacy Policy</a>&nbsp;|&nbsp;
-        <a href="https://github.com/augustosouza8/prompt-optimizer-web-app" class="text-light">GitHub Repo</a>&nbsp;|&nbsp;
+        <a href="{{ url_for('main.privacy') }}" class="text-light" data-i18n="footer.privacy">Privacy Policy</a>&nbsp;|&nbsp;
+        <a href="https://github.com/augustosouza8/prompt-optimizer-web-app" class="text-light" data-i18n="footer.github">GitHub Repo</a>&nbsp;|&nbsp;
         Built with Flask &amp; Bootstrap, powered by <a href="https://github.com/agno-agi/agno" class="text-light">Agno Multi-Agent</a>, and connected to an external <a href="https://huggingface.co/spaces/augustosouza/prompt-optimizer-mcp-server/tree/main" class="text-light">MCP server</a>
       </small>
     </div>
@@ -73,6 +80,159 @@
     integrity="sha384-..."
     crossorigin="anonymous"
   ></script>
+
+  <!-- Client-side i18n engine (HTML-only) -->
+  <script>
+    (function () {
+      const CORE_I18N = {
+        en: {
+          "brand": "Prompt Optimizer",
+          "nav.home": "Home",
+          "nav.quick": "Quick",
+          "nav.interactive": "Interactive",
+          "footer.privacy": "Privacy Policy",
+          "footer.github": "GitHub Repo"
+        },
+        pt: {
+          "brand": "Otimizador de Prompt",
+          "nav.home": "Início",
+          "nav.quick": "Rápido",
+          "nav.interactive": "Interativo",
+          "footer.privacy": "Política de Privacidade",
+          "footer.github": "Repositório no GitHub"
+        }
+      };
+
+      // --- UPDATED LANGUAGE DETECTION ONLY ---
+      function readLangFromURL() {
+        try {
+          const sp = new URLSearchParams(window.location.search);
+          const q = (sp.get('lang') || '').toLowerCase();
+          if (q === 'pt' || q === 'en') return q;
+          // also allow hash like #lang=pt
+          const m = (window.location.hash || '').match(/lang=(pt|en)/i);
+          if (m) return m[1].toLowerCase();
+        } catch (_) {}
+        return null;
+      }
+
+      function getBrowserLang() {
+        const list = Array.isArray(navigator.languages) ? navigator.languages : [];
+        const cand = list.length ? list : [(navigator.language || '')];
+        // Prefer PT if any language starts with 'pt'
+        for (const lang of cand) {
+          if ((lang || '').toLowerCase().startsWith('pt')) return 'pt';
+        }
+        // Otherwise prefer EN if present
+        for (const lang of cand) {
+          if ((lang || '').toLowerCase().startsWith('en')) return 'en';
+        }
+        return null; // let caller default to EN
+      }
+
+      function getLang() {
+        const saved = localStorage.getItem('lang');
+        if (saved === 'pt' || saved === 'en') return saved;
+
+        const fromURL = readLangFromURL();
+        if (fromURL) {
+          localStorage.setItem('lang', fromURL);
+          return fromURL;
+        }
+
+        const fromBrowser = getBrowserLang();
+        if (fromBrowser) return fromBrowser;
+
+        return 'en'; // hard default
+      }
+      // --- END UPDATED DETECTION ---
+
+      function currentDict(lang) {
+        const page = (window.appI18n && window.appI18n[lang]) ? window.appI18n[lang] : {};
+        return Object.assign({}, CORE_I18N[lang] || CORE_I18N.en, page);
+      }
+
+      // Capture default EN texts/placeholders BEFORE we translate
+      function captureDefaults() {
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+          if (!el.hasAttribute('data-i18n-default')) {
+            el.setAttribute('data-i18n-default', el.textContent);
+          }
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+          if (!el.hasAttribute('data-i18n-placeholder-default')) {
+            el.setAttribute('data-i18n-placeholder-default', el.getAttribute('placeholder') || '');
+          }
+        });
+        document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
+          if (!el.hasAttribute('data-i18n-title-default')) {
+            el.setAttribute('data-i18n-title-default', el.getAttribute('title') || '');
+          }
+        });
+      }
+
+      function applyI18n(lang) {
+        const dict = currentDict(lang);
+        document.documentElement.setAttribute('lang', lang === 'pt' ? 'pt-BR' : 'en');
+
+        // Text nodes: fallback to captured default if no dict value
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+          const key = el.getAttribute('data-i18n');
+          const val = dict[key];
+          if (val != null) {
+            el.textContent = val;
+          } else {
+            const def = el.getAttribute('data-i18n-default');
+            if (def != null) el.textContent = def;
+          }
+        });
+
+        // Placeholders
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+          const key = el.getAttribute('data-i18n-placeholder');
+          const val = dict[key];
+          if (val != null) {
+            el.setAttribute('placeholder', val);
+          } else {
+            const def = el.getAttribute('data-i18n-placeholder-default');
+            if (def != null) el.setAttribute('placeholder', def);
+          }
+        });
+
+        // Titles/tooltips
+        document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
+          const key = el.getAttribute('data-i18n-title');
+          const val = dict[key];
+          if (val != null) {
+            el.setAttribute('title', val);
+          } else {
+            const def = el.getAttribute('data-i18n-title-default');
+            if (def != null) el.setAttribute('title', def);
+          }
+        });
+      }
+
+      // Expose API
+      window.setLang = function (lang) {
+        if (lang !== 'pt' && lang !== 'en') return;
+        localStorage.setItem('lang', lang);
+        applyI18n(lang);
+      };
+
+      document.addEventListener('DOMContentLoaded', function () {
+        // IMPORTANT: capture defaults before the first translation
+        captureDefaults();
+        const lang = getLang();
+        applyI18n(lang);
+
+        // Wire up toggle buttons
+        const btnPT = document.getElementById('lang-pt');
+        const btnEN = document.getElementById('lang-en');
+        if (btnPT) btnPT.addEventListener('click', function () { window.setLang('pt'); });
+        if (btnEN) btnEN.addEventListener('click', function () { window.setLang('en'); });
+      });
+    })();
+  </script>
 
   {% block extra_scripts %}{% endblock %}
 

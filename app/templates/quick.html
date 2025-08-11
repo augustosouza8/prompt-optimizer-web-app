@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="text-center">
-  <h2>Quick Prompt Optimization</h2>
+  <h2 data-i18n="quick.title">Quick Prompt Optimization</h2>
 
   <form method="post" class="mb-4">
     <div class="mb-3">
@@ -15,16 +15,17 @@
         required
         maxlength="1800"
         placeholder="Enter your initial prompt idea, e.g.: 'Who was Princess Diana?', 'What is the internet?', 'What is Bitcoin?'"
+        data-i18n-placeholder="quick.placeholder"
       >{{ user_input or '' }}</textarea>
     </div>
 
     <div class="mb-3">
-      <label for="toneSelect" class="form-label">Select Tone:</label>
+      <label for="toneSelect" class="form-label" data-i18n="quick.select_tone">Select Tone:</label>
       <select class="form-select" id="toneSelect" name="tone" required>
-        <option value="Standard" {% if selected_tone == 'Standard' %}selected{% endif %}>Standard</option>
-        <option value="Technical" {% if selected_tone == 'Technical' %}selected{% endif %}>Technical</option>
-        <option value="Informal" {% if selected_tone == 'Informal' %}selected{% endif %}>Informal</option>
-        <option value="Custom" {% if selected_tone == 'Custom' %}selected{% endif %}>
+        <option value="Standard" {% if selected_tone == 'Standard' %}selected{% endif %} data-i18n="quick.tone.standard">Standard</option>
+        <option value="Technical" {% if selected_tone == 'Technical' %}selected{% endif %} data-i18n="quick.tone.technical">Technical</option>
+        <option value="Informal" {% if selected_tone == 'Informal' %}selected{% endif %} data-i18n="quick.tone.informal">Informal</option>
+        <option value="Custom" {% if selected_tone == 'Custom' %}selected{% endif %} data-i18n="quick.tone.custom">
           I want to set my own custom tone
         </option>
       </select>
@@ -42,23 +43,22 @@
         name="custom_tone"
         maxlength="180"
         placeholder="E.g.: 'Classic Shakespeare', 'Descriptive', 'Persuasive', 'Creative', etc."
+        data-i18n-placeholder="quick.custom_placeholder"
         value="{{ custom_tone or '' }}"
         {% if selected_tone == 'Custom' %}required{% endif %}
       />
     </div>
 
     <button id="sendBtn" type="submit" class="btn btn-lg text-white" style="background-color: #6c757d;">
-      <span class="btn-label">Send</span>
+      <span class="btn-label" data-i18n="quick.send">Send</span>
       <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
     </button>
-
-
   </form>
 
   {% if response %}
     <hr>
     <div class="mb-3 text-start">
-      <h5>Optimized Prompt:</h5>
+      <h5 data-i18n="quick.optimized_title">Optimized Prompt:</h5>
       <div class="d-flex align-items-start">
         <div
           id="optimizedPrompt"
@@ -69,23 +69,26 @@
           id="copyBtn"
           class="btn btn-secondary ms-2"
           type="button"
+          data-i18n="quick.copy"
         >Copy</button>
       </div>
 
-
-  <p class="mt-2 mb-0">
-  <a
-    href="https://forms.office.com/e/vM7W04GBxg"
-    class="link-dark text-decoration-none"
-    target="_blank"
-    rel="noopener"
-  >
-    <span style="color:#dc3545; font-weight:700;">💬 Got a minute? <u>CLICK HERE</u> and share your feedback on the Prompt Optimizer web app</span> — I promise it won’t even take a minute 😄
-  </a>
-  </p>
-
-
-
+      <!-- Feedback link with translatable parts -->
+      <p class="mt-2 mb-0">
+        <a
+          id="feedbackLink"
+          href="https://forms.office.com/e/vM7W04GBxg"
+          class="link-dark text-decoration-none"
+          target="_blank"
+          rel="noopener"
+        >
+          <span style="color:#dc3545; font-weight:700;">
+            <span data-i18n="feedback.lead">💬 Got a minute? </span>
+            <u><span data-i18n="feedback.here">CLICK HERE</span></u>
+            <span data-i18n="feedback.tail"> and share your feedback on the Prompt Optimizer web app — I promise it won’t even take a minute 😄</span>
+          </span>
+        </a>
+      </p>
     </div>
   {% endif %}
 </div>
@@ -93,24 +96,77 @@
 
 {% block extra_scripts %}
 <script>
+  // Page-level PT-BR dictionary (merged by the base script)
+  window.appI18n = window.appI18n || {};
+  window.appI18n.pt = Object.assign(window.appI18n.pt || {}, {
+    "quick.title": "Otimização de Prompt Rápida",
+    "quick.placeholder": "Digite sua ideia inicial de prompt. Ex.: “Quem foi a Princesa Diana?”, “O que é a internet?”, “O que é Bitcoin?”",
+    "quick.select_tone": "Selecione o tom:",
+    "quick.tone.standard": "Padrão",
+    "quick.tone.technical": "Técnico",
+    "quick.tone.informal": "Informal",
+    "quick.tone.custom": "Quero definir um tom personalizado",
+    "quick.custom_placeholder": "Ex.: “Shakespeare clássico”, “Descritivo”, “Persuasivo”, “Criativo” etc.",
+    "quick.send": "Enviar",
+    "quick.optimized_title": "Prompt Otimizado:",
+    "quick.copy": "Copiar",
+    "quick.copied": "Copiado!",
+    "quick.loading": "Carregando…",
+
+    /* Feedback line (split in 3 parts to keep underline on HERE) */
+    "feedback.lead": "💬 Tem um minutinho? ",
+    "feedback.here": "CLIQUE AQUI",
+    "feedback.tail": " e compartilhe seu feedback sobre o aplicativo Prompt Optimizer — prometo que não vai levar nem um minuto 😄"
+  });
+
+  function pageLang() {
+    return document.documentElement.getAttribute('lang') === 'pt-BR' ? 'pt' : 'en';
+  }
+  function t(key, fallback) {
+    const dict = (window.appI18n && window.appI18n[pageLang()]) || {};
+    return dict[key] || fallback;
+  }
+
+  // Language-specific feedback URLs
+  const FEEDBACK_LINKS = {
+    en: "https://forms.office.com/e/vM7W04GBxg",
+    pt: "https://forms.test.portugues.com/"  // <-- Portuguese form URL
+  };
+  function setFeedbackHref(lang) {
+    const a = document.getElementById('feedbackLink');
+    if (a) a.href = FEEDBACK_LINKS[lang] || FEEDBACK_LINKS.en;
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     const toneSelect = document.getElementById('toneSelect');
     const customContainer = document.getElementById('customToneContainer');
     const customInput = document.getElementById('customToneInput');
 
-    // Show/hide custom-tone box
-    toneSelect.addEventListener('change', function() {
-      if (toneSelect.value === 'Custom') {
-        customContainer.style.display = 'block';
-        customInput.required = true;
-      } else {
-        customContainer.style.display = 'none';
-        customInput.required = false;
-        customInput.value = '';
-      }
-    });
+    // Set initial feedback link based on current language
+    setFeedbackHref(pageLang());
 
-    // Copy button logic
+    // Patch base.html's setLang so PT/EN toggle also updates the link
+    const originalSetLang = window.setLang;
+    window.setLang = function(lang) {
+      if (typeof originalSetLang === 'function') originalSetLang(lang);
+      setFeedbackHref(lang);
+    };
+
+    // Show/hide custom-tone box
+    if (toneSelect) {
+      toneSelect.addEventListener('change', function() {
+        if (toneSelect.value === 'Custom') {
+          customContainer.style.display = 'block';
+          customInput.required = true;
+        } else {
+          customContainer.style.display = 'none';
+          customInput.required = false;
+          customInput.value = '';
+        }
+      });
+    }
+
+    // Copy button logic (localized)
     const copyBtn = document.getElementById('copyBtn');
     const optimizedPrompt = document.getElementById('optimizedPrompt');
     if (copyBtn && optimizedPrompt) {
@@ -118,27 +174,22 @@
         const text = optimizedPrompt.innerText;
         navigator.clipboard.writeText(text)
           .then(() => {
-            copyBtn.textContent = 'Copied!';
-            setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
+            copyBtn.textContent = t('quick.copied', 'Copied!');
+            setTimeout(() => { copyBtn.textContent = t('quick.copy', 'Copy'); }, 2000);
           })
-          .catch(err => {
-            console.error('Copy failed', err);
-          });
+          .catch(err => { console.error('Copy failed', err); });
       });
     }
   });
 
-  // loading animation
-  document.querySelector('form').addEventListener('submit', function(e) {
+  // Loading animation with i18n text
+  document.querySelector('form').addEventListener('submit', function() {
     const btn = document.getElementById('sendBtn');
     const spinner = btn.querySelector('.spinner-border');
     const label   = btn.querySelector('.btn-label');
-    // disable to prevent double‐submits
     btn.disabled = true;
-    // hide label, show spinner + “Loading…”
-    label.textContent = 'Loading…';
+    label.textContent = t('quick.loading', 'Loading…');
     spinner.classList.remove('d-none');
   });
-
 </script>
 {% endblock %}

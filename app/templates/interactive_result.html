@@ -3,7 +3,7 @@
 {% block title %}Prompt Optimization Web App{% endblock %}
 
 {% block content %}
-<h2>Interactive Optimized Prompt:</h2>
+<h2 data-i18n="result.title">Interactive Optimized Prompt:</h2>
 
 <div class="mb-3 text-start">
   <div class="d-flex align-items-start">
@@ -16,29 +16,75 @@
       id="copyBtn"
       class="btn btn-secondary ms-2"
       type="button"
+      data-i18n="result.copy"
     >Copy</button>
   </div>
 
+  <!-- Feedback link with translatable parts -->
   <p class="mt-2 mb-0">
-  <a
-    href="https://forms.office.com/e/vM7W04GBxg"
-    class="link-dark text-decoration-none"
-    target="_blank"
-    rel="noopener"
-  >
-    <span style="color:#dc3545; font-weight:700;">💬 Got a minute? <u>CLICK HERE</u> and share your feedback on the Prompt Optimizer web app</span> — I promise it won’t even take a minute 😄
-  </a>
+    <a
+      id="feedbackLink"
+      href="https://forms.office.com/e/vM7W04GBxg"
+      class="link-dark text-decoration-none"
+      target="_blank"
+      rel="noopener"
+    >
+      <span style="color:#dc3545; font-weight:700;">
+        <span data-i18n="feedback.lead">💬 Got a minute? </span>
+        <u><span data-i18n="feedback.here">CLICK HERE</span></u>
+        <span data-i18n="feedback.tail"> and share your feedback on the Prompt Optimizer web app — I promise it won’t even take a minute 😄</span>
+      </span>
+    </a>
   </p>
-
-
-
 </div>
-
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
+  // Page-level PT-BR dictionary
+  window.appI18n = window.appI18n || {};
+  window.appI18n.pt = Object.assign(window.appI18n.pt || {}, {
+    "result.title": "Prompt Otimizado (Interativo):",
+    "result.copy": "Copiar",
+    "result.copied": "Copiado!",
+
+    /* Feedback line (split in 3 parts to keep underline on HERE) */
+    "feedback.lead": "💬 Tem um minutinho? ",
+    "feedback.here": "CLIQUE AQUI",
+    "feedback.tail": " e compartilhe seu feedback sobre o aplicativo Prompt Optimizer — prometo que não vai levar nem um minuto 😄"
+  });
+
+  function pageLang() {
+    return document.documentElement.getAttribute('lang') === 'pt-BR' ? 'pt' : 'en';
+  }
+  function t(key, fallback) {
+    const dict = (window.appI18n && window.appI18n[pageLang()]) || {};
+    return dict[key] || fallback;
+  }
+
+  // Language-specific feedback URLs
+  const FEEDBACK_LINKS = {
+    en: "https://forms.office.com/e/vM7W04GBxg",
+    pt: "https://forms.test.portugues.com/"  // <-- your Portuguese form
+  };
+
+  function setFeedbackHref(lang) {
+    const a = document.getElementById('feedbackLink');
+    if (a) a.href = FEEDBACK_LINKS[lang] || FEEDBACK_LINKS.en;
+  }
+
+  // Copy button logic with i18n labels
   document.addEventListener('DOMContentLoaded', function() {
+    // Set initial link based on current language
+    setFeedbackHref(pageLang());
+
+    // Patch base.html's setLang so changing PT/EN also updates the link
+    const originalSetLang = window.setLang;
+    window.setLang = function(lang) {
+      if (typeof originalSetLang === 'function') originalSetLang(lang);
+      setFeedbackHref(lang);
+    };
+
     const copyBtn = document.getElementById('copyBtn');
     const interactivePrompt = document.getElementById('interactivePrompt');
     if (copyBtn && interactivePrompt) {
@@ -46,12 +92,10 @@
         const text = interactivePrompt.innerText;
         navigator.clipboard.writeText(text)
           .then(() => {
-            copyBtn.textContent = 'Copied!';
-            setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
+            copyBtn.textContent = t('result.copied', 'Copied!');
+            setTimeout(() => { copyBtn.textContent = t('result.copy', 'Copy'); }, 2000);
           })
-          .catch(err => {
-            console.error('Copy failed', err);
-          });
+          .catch(err => { console.error('Copy failed', err); });
       });
     }
   });

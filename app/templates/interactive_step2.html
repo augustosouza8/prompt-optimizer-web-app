@@ -3,8 +3,8 @@
 {% block title %}Prompt Optimization Web App{% endblock %}
 
 {% block content %}
-<h2>Interactive Prompt Optimization</h2>
-<p>Please answer these follow‑up questions:</p>
+<h2 data-i18n="interactive2.title">Interactive Prompt Optimization</h2>
+<p data-i18n="interactive2.subtitle">Please answer these follow-up questions:</p>
 
 <form method="post" action="{{ url_for('main.interactive_followup') }}">
   {% for q in followups %}
@@ -15,33 +15,47 @@
         class="form-control"
         rows="2"
         required
+        data-i18n-placeholder="interactive2.answer_placeholder"
       ></textarea>
       <input type="hidden" name="follow_q" value="{{ q }}">
     </div>
   {% endfor %}
 
-    <button id="sendBtn" type="submit" class="btn btn-lg text-white" style="background-color: #6c757d;">
-      <span class="btn-label">Submit</span>
-      <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
-    </button>
-
+  <button id="sendBtn" type="submit" class="btn btn-lg text-white" style="background-color: #6c757d;">
+    <span class="btn-label" data-i18n="interactive2.submit">Submit</span>
+    <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+  </button>
 </form>
 {% endblock %}
 
-
 {% block extra_scripts %}
 <script>
-  // loading animation
-  document.querySelector('form').addEventListener('submit', function(e) {
-    const btn = document.getElementById('sendBtn');
-    const spinner = btn.querySelector('.spinner-border');
-    const label   = btn.querySelector('.btn-label');
-    // disable to prevent double‐submits
-    btn.disabled = true;
-    // hide label, show spinner + “Loading…”
-    label.textContent = 'Loading…';
-    spinner.classList.remove('d-none');
+  // Page-level PT-BR dictionary (merged/applied by base.html script)
+  window.appI18n = window.appI18n || {};
+  window.appI18n.pt = Object.assign(window.appI18n.pt || {}, {
+    "interactive2.title": "Otimização de Prompt Interativa",
+    "interactive2.subtitle": "Por favor, responda às perguntas de acompanhamento:",
+    "interactive2.answer_placeholder": "Digite sua resposta aqui",
+    "interactive2.submit": "Enviar",
+    "interactive2.loading": "Carregando…"
   });
 
+  function pageLang() {
+    return document.documentElement.getAttribute('lang') === 'pt-BR' ? 'pt' : 'en';
+  }
+  function t(key, fallback) {
+    const dict = (window.appI18n && window.appI18n[pageLang()]) || {};
+    return dict[key] || fallback;
+  }
+
+  // Loading animation with i18n text
+  document.querySelector('form').addEventListener('submit', function () {
+    const btn = document.getElementById('sendBtn');
+    const spinner = btn.querySelector('.spinner-border');
+    const label = btn.querySelector('.btn-label');
+    btn.disabled = true;
+    label.textContent = t('interactive2.loading', 'Loading…');
+    spinner.classList.remove('d-none');
+  });
 </script>
 {% endblock %}

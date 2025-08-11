@@ -3,10 +3,10 @@
 {% block title %}Prompt Optimization Web App{% endblock %}
 
 {% block content %}
-<h2>Interactive Prompt Optimization</h2>
+<h2 data-i18n="interactive.title">Interactive Prompt Optimization</h2>
 <form method="post" action="{{ url_for('main.interactive') }}">
 
-<!--  Setting a costume color for the placeholder's-->
+<!--  Placeholder color -->
 <style>
   textarea::placeholder {
     color: #C4C4C4 !important;
@@ -14,10 +14,10 @@
   }
 </style>
 
-
   {% for question in questions %}
     <div class="mb-3">
-      <label for="q{{ loop.index }}" class="form-label">
+      <label for="q{{ loop.index }}" class="form-label"
+             data-i18n="interactive.q{{ loop.index }}">
         {{ question }}
       </label>
       <textarea
@@ -26,32 +26,60 @@
         class="form-control"
         rows="2"
         placeholder="{{ placeholders[loop.index0] }}"
+        data-i18n-placeholder="interactive.p{{ loop.index }}"
         required
       ></textarea>
     </div>
   {% endfor %}
 
-    <button id="sendBtn" type="submit" class="btn btn-lg text-white" style="background-color: #6c757d;">
-      <span class="btn-label">Next</span>
-      <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
-    </button>
+  <button id="sendBtn" type="submit" class="btn btn-lg text-white" style="background-color: #6c757d;">
+    <span class="btn-label" data-i18n="interactive.next">Next</span>
+    <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+  </button>
 
 </form>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
-  // loading animation
-  document.querySelector('form').addEventListener('submit', function(e) {
+  // Page-level PT-BR dictionary (merged by the base script)
+  window.appI18n = window.appI18n || {};
+  window.appI18n.pt = Object.assign(window.appI18n.pt || {}, {
+    "interactive.title": "Otimização de Prompt Interativa",
+
+    "interactive.q1": "1. Qual problema ou desafio está levando você a buscar ajuda de uma IA como o ChatGPT agora?",
+    "interactive.q2": "2. Que papel ou especialidade a IA deve adotar ao responder?",
+    "interactive.q3": "3. Em qual formato ou estilo você quer a resposta?",
+    "interactive.q4": "4. Há restrições, limitações ou algo específico em que devemos focar?",
+    "interactive.q5": "5. Quer acrescentar mais alguma informação sobre sua demanda?",
+
+    "interactive.p1": "Ex.: “Ajude-me a planejar uma viagem à Itália”, “Quero aprender sobre aviões”, “Preciso estruturar meu relatório trimestral”",
+    "interactive.p2": "Ex.: Consultor especialista, redator criativo, analista técnico, professor de história",
+    "interactive.p3": "Ex.: Relatório formal, explicação casual, passo a passo, conteúdo nerd, plano de ação em tópicos (sinta-se livre para combinar formato e estilo)",
+    "interactive.p4": "Ex.: “Só referencie artigos científicos”, “Não mencione política ou religião”, “Limite a 200 palavras”",
+    "interactive.p5": "Qualquer outro detalhe; quanto mais contexto, melhor será o prompt gerado",
+
+    "interactive.next": "Avançar",
+    "interactive.loading": "Carregando…"
+  });
+
+  // Small helper to fetch translated strings on this page
+  function pageLang() {
+    return document.documentElement.getAttribute('lang') === 'pt-BR' ? 'pt' : 'en';
+  }
+  function t(key, fallback) {
+    const dict = (window.appI18n && window.appI18n[pageLang()]) || {};
+    return dict[key] || fallback;
+  }
+
+  // Loading animation with i18n text
+  document.querySelector('form').addEventListener('submit', function () {
     const btn = document.getElementById('sendBtn');
     const spinner = btn.querySelector('.spinner-border');
     const label   = btn.querySelector('.btn-label');
-    // disable to prevent double‐submits
     btn.disabled = true;
-    // hide label, show spinner + “Loading…”
-    label.textContent = 'Loading…';
+    label.textContent = t('interactive.loading', 'Loading…');
     spinner.classList.remove('d-none');
   });
-
 </script>
 {% endblock %}
