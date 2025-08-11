@@ -103,7 +103,7 @@
         }
       };
 
-      // --- UPDATED LANGUAGE DETECTION ONLY ---
+      // --- LANGUAGE DETECTION ---
       function readLangFromURL() {
         try {
           const sp = new URLSearchParams(window.location.search);
@@ -119,33 +119,32 @@
       function getBrowserLang() {
         const list = Array.isArray(navigator.languages) ? navigator.languages : [];
         const cand = list.length ? list : [(navigator.language || '')];
-        // Prefer PT if any language starts with 'pt'
         for (const lang of cand) {
           if ((lang || '').toLowerCase().startsWith('pt')) return 'pt';
         }
-        // Otherwise prefer EN if present
         for (const lang of cand) {
           if ((lang || '').toLowerCase().startsWith('en')) return 'en';
         }
-        return null; // let caller default to EN
+        return null;
       }
 
+      // **Minimal change here: URL wins, then saved, then browser, then EN**
       function getLang() {
-        const saved = localStorage.getItem('lang');
-        if (saved === 'pt' || saved === 'en') return saved;
-
         const fromURL = readLangFromURL();
         if (fromURL) {
           localStorage.setItem('lang', fromURL);
           return fromURL;
         }
 
+        const saved = localStorage.getItem('lang');
+        if (saved === 'pt' || saved === 'en') return saved;
+
         const fromBrowser = getBrowserLang();
         if (fromBrowser) return fromBrowser;
 
-        return 'en'; // hard default
+        return 'en';
       }
-      // --- END UPDATED DETECTION ---
+      // --- END LANGUAGE DETECTION ---
 
       function currentDict(lang) {
         const page = (window.appI18n && window.appI18n[lang]) ? window.appI18n[lang] : {};
@@ -175,7 +174,7 @@
         const dict = currentDict(lang);
         document.documentElement.setAttribute('lang', lang === 'pt' ? 'pt-BR' : 'en');
 
-        // Text nodes: fallback to captured default if no dict value
+        // Text nodes
         document.querySelectorAll('[data-i18n]').forEach(function (el) {
           const key = el.getAttribute('data-i18n');
           const val = dict[key];
