@@ -31,7 +31,7 @@ async def _query_agent_async(message: str) -> str:
         raise RuntimeError(f"Environment variable '{_GROQ_API_KEY_ENV}' is not set.")
 
     # Manually enter the SSE-based MCPTools context
-    mcp = MCPTools(server_params=get_sse_params(), transport="sse")
+    mcp = MCPTools(server_params=get_sse_params(), transport="sse", timeout_seconds=30)
     await mcp.__aenter__()
 
     try:
@@ -59,14 +59,14 @@ async def _query_agent_async(message: str) -> str:
 
 
         ##### AUGUSTO DEBUG #####
-        print("Debug run_response await agent.arun(message).content, fetching the response by the Agno agent after receiving it from the MCP tool: ", run_response.content)
-
-        print("Debug run_response.tools[0].result), fetching the response directly from the MCP tool: ", run_response.tools[0].result)
-
-        if run_response.content.strip() == run_response.tools[0].result.strip():
-            print("SAME RESPONSE")
-        else:
-            print("DIFFERENT RESPONSE")
+        # print("Debug run_response await agent.arun(message).content, fetching the response by the Agno agent after receiving it from the MCP tool: ", run_response.content)
+        #
+        # print("Debug run_response.tools[0].result), fetching the response directly from the MCP tool: ", run_response.tools[0].result)
+        #
+        # if run_response.content.strip() == run_response.tools[0].result.strip():
+        #     print("SAME RESPONSE")
+        # else:
+        #     print("DIFFERENT RESPONSE")
 
     finally:
         # Exit the context, suppressing only the Python 3.12 cancel-scope bug
