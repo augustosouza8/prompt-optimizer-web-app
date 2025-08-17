@@ -1,5 +1,3 @@
-# app/agno_agent.py
-
 import os
 import asyncio
 
@@ -58,7 +56,7 @@ async def _query_agent_async(message: str) -> str:
         run_response = await agent.arun(message)
 
 
-        ##### AUGUSTO DEBUG #####
+        ##### AUGUSTO INTERNAL DEBUG #####
         # print("Debug run_response await agent.arun(message).content, fetching the response by the Agno agent after receiving it from the MCP tool: ", run_response.content)
         #
         # print("Debug run_response.tools[0].result), fetching the response directly from the MCP tool: ", run_response.tools[0].result)
